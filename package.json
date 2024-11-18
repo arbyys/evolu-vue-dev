@@ -1,0 +1,21 @@
+{
+  "name": "development",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "arbyys",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@evolu/common": "^5.4.8",
+    "@evolu/common-web": "^8.2.4",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.5",
+    "vue": "^3.5.13"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.13"
+  }
+}
