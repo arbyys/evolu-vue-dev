@@ -1,20 +1,27 @@
 import { ref, watch, onUnmounted, type Ref } from 'vue';
-import { useEvoluInstance } from '../evolu-provider';
-import type { QueryResult, Row } from '@evolu/common';
+import { injectEvolu } from '../evolu-provider';
+import type { emptyRows, queryResultFromRows, Query, QueryResult, Row } from '@evolu/common';
 
-export const useQuerySubscription = <R extends Row>(
-  queryFn: (db: any) => any
-): Ref<QueryResult<R>> => {
-  const evolu = useEvoluInstance();
-  const data = ref<QueryResult<R>>(evolu.getQuery<R>(evolu.createQuery(queryFn)));
+/**
+ * Subscribe to {@link Query} {@link QueryResult} changes and return the current value.
+ * Use this for dynamic updates without triggering initial data loading.
+ *
+ * @example
+ * const { rows } = useQuerySubscription(allTodos);
+ */
+const useQuerySubscription = <R extends Row>(
+    query: Query<R>,
+): Ref<Readonly<QueryResult<R>>> => {
+    const evolu = injectEvolu();
+    const data = ref<QueryResult<R>>({ row: null, rows: [] }) as Ref<Readonly<QueryResult<R>>>;
 
-  const unsubscribe = evolu.subscribeQuery(evolu.createQuery(queryFn))(() => {
-    data.value = evolu.getQuery<R>(evolu.createQuery(queryFn));
-  });
+    const unsubscribe = evolu.subscribeQuery(query)(() => {
+        data.value = evolu.getQuery<R>(query);
+    });
 
-  onUnmounted(() => {
-    unsubscribe();
-  });
+    onUnmounted(() => {
+        unsubscribe();
+    });
 
-  return data;
+    return data;
 };

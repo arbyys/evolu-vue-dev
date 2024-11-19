@@ -1,18 +1,18 @@
 import { ref, onUnmounted, type Ref } from 'vue';
-import { useEvoluInstance } from '../evolu-provider';
+import { injectEvolu } from '../evolu-provider';
 import type { EvoluError } from '@evolu/common';
 
 export const useEvoluError = (): Ref<EvoluError | null> => {
-  const evolu = useEvoluInstance();
-  const error = ref<EvoluError | null>(evolu.getError());
+    const evolu = injectEvolu();
+    const error = ref<EvoluError | null>(evolu.getError());
 
-  const unsubscribe = evolu.subscribeError(() => {
-    error.value = evolu.getError();
-  });
+    const unsubscribe = evolu.subscribeError(() => {
+        error.value = evolu.getError();
+    });
 
-  onUnmounted(() => {
-    unsubscribe();
-  });
+    onUnmounted(() => {
+        unsubscribe();
+    });
 
-  return error;
+    return error;
 };

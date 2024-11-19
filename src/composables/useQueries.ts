@@ -1,34 +1,46 @@
-import { ref, watch, type Ref } from 'vue';
-import { useEvoluInstance } from '../evolu-provider';
-import type { Evolu, QueryResult, Row } from '@evolu/common';
+import { onUnmounted, ref, watch, type Ref } from 'vue';
+import { injectEvolu } from '../evolu-provider';
+import type { Evolu, QueryResult, Row, Queries, QueryResultsFromQueries, QueryResultsPromisesFromQueries } from '@evolu/common';
 
-export const useQueries = <R extends Row>(
-  queryFns: ((db: any) => any)[]
-): Ref<QueryResult<R>[]> => {
-  const evolu = useEvoluInstance();
-  const data = ref<QueryResult<R>[]>([]);
+export const useQueries = <R extends Row, Q extends Queries<R>, OQ extends Queries<R>>(
+    queries: [...Q],
+    options: Partial<{
+        /** Queries that should be only loaded, not subscribed to. */
+        readonly once: [...OQ];
 
-  watch(
-    queryFns,
-    async (queries) => {
-      const results = await Promise.all(
-        queries.map((queryFn) => evolu.loadQuery<R>(evolu.createQuery(queryFn)))
-      );
-      data.value = results;
+        /** Reuse existing promises instead of loading so query will not suspense. */
+        readonly promises: [
+            ...QueryResultsPromisesFromQueries<Q>,
+            ...QueryResultsPromisesFromQueries<OQ>,
+        ];
+    }> = {},
+//): [...QueryResultsFromQueries<Q>, ...QueryResultsFromQueries<OQ>] => {
+): void => {
+    const evolu = injectEvolu();
+    const allQueries = !options?.once ? queries.concat() : queries;
+    //const data = ref<QueryResult<R>[]>([]);
 
-      const unsubscribes = queries.map((queryFn) =>
-        evolu.subscribeQuery(evolu.createQuery(queryFn))(() => {
-          const newResults = queries.map((qFn) =>
-            evolu.getQuery<R>(evolu.createQuery(qFn))
-          );
-          data.value = newResults;
-        })
-      );
+/*
+    if (options?.promises) {
+        options.promise.then((result) => (data.value = result));
+    } else {
+        evolu.loadQuery(query).then((result) => (data.value = result));
+    }
 
-      watch(queryFns, () => unsubscribes.forEach((u) => u()), { immediate: true });
-    },
-    { immediate: true }
-  );
+    if (!options?.once) {
+        //
+    }
 
-  return data;
+
+    return allQueries.map((query, i) => {
+        const unsubscribe = evolu.subscribeQuery(query)(() => {
+            data.value = evolu.getQuery<R>(query);
+        });
+
+        onUnmounted(() => {
+            unsubscribe();
+        });
+    }
+    ) as never;
+     */
 };

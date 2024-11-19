@@ -7,7 +7,7 @@ export const provideEvolu = (evolu: Evolu<any>): void => {
   provide(EvoluSymbol, evolu);
 };
 
-export const useEvoluInstance = <S extends EvoluSchema>(): Evolu<S> => {
+export const injectEvolu = <S extends EvoluSchema>(): Evolu<S> => {
   const evolu = inject(EvoluSymbol);
   if (!evolu) {
     throw new Error('Could not inject Evolu instance. Make sure to call `provideEvolu` at the app level.');
