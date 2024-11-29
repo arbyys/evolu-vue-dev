@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -b && vite build"
+    "build": "rd /s /q dist && tsc -b"
   },
   "author": "arbyys",
   "license": "MIT",
