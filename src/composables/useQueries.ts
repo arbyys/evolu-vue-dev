@@ -1,6 +1,7 @@
-import { onUnmounted, ref, watch, type Ref } from 'vue';
 import { injectEvolu } from '../evolu-provider';
-import type { Evolu, QueryResult, Row, Queries, QueryResultsFromQueries, QueryResultsPromisesFromQueries } from '@evolu/common';
+import type { Evolu, Queries, QueryResultsFromQueries, QueryResultsPromisesFromQueries, Row } from '@evolu/common';
+//import { useQuery } from './useQuery';
+import { useQuerySubscription } from './useQuerySubscription';
 
 export const useQueries = <R extends Row, Q extends Queries<R>, OQ extends Queries<R>>(
     queries: [...Q],
@@ -13,34 +14,21 @@ export const useQueries = <R extends Row, Q extends Queries<R>, OQ extends Queri
             ...QueryResultsPromisesFromQueries<Q>,
             ...QueryResultsPromisesFromQueries<OQ>,
         ];
-    }> = {},
-//): [...QueryResultsFromQueries<Q>, ...QueryResultsFromQueries<OQ>] => {
-): void => {
+    }> = {}
+): [...QueryResultsFromQueries<Q>, ...QueryResultsFromQueries<OQ>] => {
     const evolu = injectEvolu();
-    const allQueries = !options?.once ? queries.concat() : queries;
-    //const data = ref<QueryResult<R>[]>([]);
+    const onceQueries = options?.once ?? [];
+    const allQueries = onceQueries.length ? queries.concat(onceQueries) : queries;
 
-/*
     if (options?.promises) {
-        options.promise.then((result) => (data.value = result));
+        options.promises.forEach(promise => {
+            promise.then(result => {});
+        });
     } else {
-        evolu.loadQuery(query).then((result) => (data.value = result));
+        evolu.loadQueries(allQueries);
     }
 
-    if (!options?.once) {
-        //
-    }
+    const results = allQueries.map((query) => useQuerySubscription(query));
 
-
-    return allQueries.map((query, i) => {
-        const unsubscribe = evolu.subscribeQuery(query)(() => {
-            data.value = evolu.getQuery<R>(query);
-        });
-
-        onUnmounted(() => {
-            unsubscribe();
-        });
-    }
-    ) as never;
-     */
+    return results as unknown as [...QueryResultsFromQueries<Q>, ...QueryResultsFromQueries<OQ>];
 };

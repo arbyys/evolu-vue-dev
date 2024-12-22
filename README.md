@@ -1,7 +1,10 @@
 # @evolu/vue
 
 First version of Evolu Vue implementation
-- https://chatgpt.com/c/673a59c2-83c0-8006-9440-4c4c23f38ae2
+
+
+### Todo:
+- bubble "once" from `useQueries` to `useQuerySubscription`?
 
 ## Usage in app main file
 

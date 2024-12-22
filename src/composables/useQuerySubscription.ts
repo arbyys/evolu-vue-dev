@@ -9,8 +9,8 @@ import type { emptyRows, queryResultFromRows, Query, QueryResult, Row } from '@e
  * @example
  * const { rows } = useQuerySubscription(allTodos);
  */
-const useQuerySubscription = <R extends Row>(
-    query: Query<R>,
+export const useQuerySubscription = <R extends Row>(
+    query: Query<R>
 ): Ref<Readonly<QueryResult<R>>> => {
     const evolu = injectEvolu();
     const data = ref<QueryResult<R>>({ row: null, rows: [] }) as Ref<Readonly<QueryResult<R>>>;

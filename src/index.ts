@@ -5,11 +5,9 @@ export { useEvoluError } from './composables/useEvoluError';
 export { useSyncState } from './composables/useSyncState';
 export { useOwner } from './composables/useOwner';
 
-import { EvoluFactory, FlushSync } from "@evolu/common";
+import { Evolu, EvoluFactory, FlushSync } from "@evolu/common";
 export { createEvolu } from "@evolu/common-web";
 export * from "@evolu/common/public";
-
-export { Evolu } from "@evolu/common";
 
 //export { useQuerySubscription } from './composables/useQuerySubscription';
 
